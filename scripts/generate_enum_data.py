@@ -106,14 +106,19 @@ def extract_data():
         print("Warning: duplicate minion:",name, minions[e.name][1 if golden else 0].id, e.id)
       minions[e.name][1 if golden else 0] = e
     elif "TB_BaconShop_HERO" in e.id and e.id != "TB_BaconShop_HERO_PH" and e.get_int("CARDTYPE") == 3: # hero
-      heroes.append(e)
       # find heropower
+      add=True
       hp = e.get_tag("HERO_POWER")
       if hp is None:
         e.hp = NoneEntity()
         print("No hero power for",name)
       else:
-        e.hp = Entity(defs.find("Entity[@CardID='{}']".format(hp.attrib["cardID"])))
+        if 'cardID' in hp.attrib:
+          e.hp = Entity(defs.find("Entity[@CardID='{}']".format(hp.attrib["cardID"])))
+        else:
+          add = False
+      if add:
+        heroes.append(e)
 
   return minions,heroes
 
@@ -121,7 +126,7 @@ def extract_data():
 # Extra data
 # ------------------------------------------------------------------------------
 
-tribes = {0:"None", 14:"Murloc", 15:"Demon", 17:"Mech", 20:"Beast", 24:"Dragon", 26:"All"}
+tribes = {0:"None", 14:"Murloc", 15:"Demon", 17:"Mech", 20:"Beast", 24:"Dragon", 26:"All", 23:"Pirate", 18:"Elemental"}
 
 class CustomEntity:
   id = None
@@ -164,13 +169,13 @@ def add_custom_minions(minions):
   mama.tribe = "Beast"
   minions.append([mama,None])
 
-  na = CustomEntity("Nightmare Amalgam")
-  na.id = "GIL_681"
-  na.tier = 2
-  na.attack = 3
-  na.health = 4
-  na.tribe = "All"
-  minions.append([na,None])
+  # na = CustomEntity("Nightmare Amalgam")
+  # na.id = "GIL_681"
+  # na.tier = 2
+  # na.attack = 3
+  # na.health = 4
+  # na.tribe = "All"
+  # minions.append([na,None])
 
 def add_custom_heroes(heroes):
   heroes.insert(0,NoneEntity())
