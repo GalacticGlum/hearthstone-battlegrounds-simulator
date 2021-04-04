@@ -1,0 +1,7 @@
+board
+* Ring Matron
+vs
+* Murloc Scout
+* 4/10 Murloc Scout
+
+trace

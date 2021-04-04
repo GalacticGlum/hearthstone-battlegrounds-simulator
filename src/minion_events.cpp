@@ -123,6 +123,11 @@ void Minion::do_deathrattle(Battle& battle, int player, int pos) const {
         battle.summon(random_four_cost_minion(battle.rng, player), player, pos);
       }
       break;
+    case MinionType::RingMatron: {
+      battle.summon(Minion(MinionType::Imp, golden), player, pos);
+      battle.summon(Minion(MinionType::Imp, golden), player, pos);
+      break;
+    }
     case MinionType::TheBeast:
       battle.summon_for_opponent(MinionType::FinkleEinhorn, player);
       break;
