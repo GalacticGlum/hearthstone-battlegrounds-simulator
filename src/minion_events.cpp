@@ -251,6 +251,11 @@ void Minion::on_damaged(Battle& battle, int player, int pos) {
     case MinionType::SecurityRover:
       battle.summon(Minion(MinionType::GuardBot,golden), player, pos+1);
       break;
+    case MinionType::YoHoOgre: {
+      if (health <= 0) break;
+      // Survived being attacked, so it will attack immediately.
+      battle.single_attack_by(player, pos);
+    }
     default:;
   }
 }
