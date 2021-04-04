@@ -1,0 +1,11 @@
+board
+* 2/2 Murloc Scout
+* Tormented Ritualist
+* 2/2 Murloc Scout
+vs
+* Murloc Scout
+* Murloc Scout
+* Murloc Scout
+* Murloc Scout
+
+trace

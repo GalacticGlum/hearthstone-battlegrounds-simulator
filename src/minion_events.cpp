@@ -255,6 +255,12 @@ void Minion::on_damaged(Battle& battle, int player, int pos) {
       if (health <= 0) break;
       // Survived being attacked, so it will attack immediately.
       battle.single_attack_by(player, pos);
+      break;
+    }
+    case MinionType::TormentedRitualist: {
+      // Whenever this is attacked, give adjacent minions +1/+1.
+      battle.board[player].aura_buff_adjacent(double_if_golden(1), double_if_golden(1), pos);
+      break;
     }
     default:;
   }
