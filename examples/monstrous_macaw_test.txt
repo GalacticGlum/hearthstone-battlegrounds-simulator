@@ -1,8 +1,8 @@
 board
-* golden Scallywag
 * Monstrous Macaw
 * Murloc Scout
 * Murloc Scout
+* 1/100 golden Scallywag
 vs
 * golden Murloc Scout
 * Murloc Scout

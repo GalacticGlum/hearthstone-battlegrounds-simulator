@@ -24,6 +24,7 @@ struct Minion {
   int attack_aura : 8; // temporary buffs from auras, at most 6*4+13*4
   int health_aura : 7;
   bool invalid_aura : 1; // the stats are forced to a given value which includes auras
+  bool deathrattle: 1;
 
   constexpr Minion()
     : attack(0)
@@ -42,6 +43,7 @@ struct Minion {
     , attack_aura(0)
     , health_aura(0)
     , invalid_aura(false)
+    , deathrattle(false)
   {}
   Minion(MinionType type, bool golden = false)
     : Minion(type, ::info(type), golden)
@@ -64,6 +66,7 @@ private:
     , attack_aura(0)
     , health_aura(0)
     , invalid_aura(false)
+    , deathrattle(info.deathrattle)
   {}
 public:
 
@@ -168,6 +171,7 @@ public:
     , attack_aura(0)
     , health_aura(0)
     , invalid_aura(false)
+    , deathrattle(false)
   {}
 };
 

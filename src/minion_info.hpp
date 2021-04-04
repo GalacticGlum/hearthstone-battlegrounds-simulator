@@ -41,6 +41,7 @@ struct MinionInfo {
   bool taunt, divine_shield, poison, windfury, cleave;
   bool battlecry;
   bool in_minion_pool;
+  bool deathrattle;
 
   constexpr int attack_for(bool golden) const {
     return double_if_golden(attack, golden);

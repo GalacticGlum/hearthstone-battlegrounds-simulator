@@ -282,14 +282,15 @@ def write_enum_data_cpp(minions, heroes):
     f.write("const MinionInfo minion_info[] = {\n")
     for m in minions:
       e = m[0]
-      f.write("  {{{}, {{{},{}}}, {}, Tribe::{}, {},{}, {},{},{},{},{}, {},{}}},\n".format(
+      f.write("  {{{}, {{{},{}}}, {}, Tribe::{}, {},{}, {},{},{},{},{}, {},{}, {}}},\n".format(
         cstr(e.name), cstr(e.id), cstr(m[1].id if m[1] is not None else None),
         e.tier, e.tribe,
         e.get_int("ATK"), e.get_int("HEALTH"),
         cbool(e.get_bool("TAUNT")), cbool(e.get_bool("DIVINE_SHIELD")), cbool(e.get_bool("POISONOUS")), cbool(e.get_bool("WINDFURY")),
         cbool(e.cleave),
         cbool(e.get_bool("BATTLECRY")),
-        cbool(e.get_bool("IS_BACON_POOL_MINION"))
+        cbool(e.get_bool("IS_BACON_POOL_MINION")),
+        cbool(bool(e.get_int('DEATHRATTLE')))
       ))
     f.write("};\n\n")
 
@@ -301,13 +302,6 @@ def write_enum_data_cpp(minions, heroes):
     write_minion_list(f, minions, "four_cost", lambda e: e.get_int("COST") == 4 and not e.token)
     write_minion_list(f, minions, "deathrattle", lambda e: e.get_int("DEATHRATTLE") and not e.token)
     write_minion_list(f, minions, "legendary", lambda e: e.get_int("RARITY") == 5 and not e.token)
-
-    # Add has_deathrattle set
-    f.write('static const std::unordered_map<MinionType, bool> has_deathrattle = {\n')
-    for m in minions:
-      e = m[0]
-      f.write('\t{{ MinionType::{}, {} }},\n'.format(e.enum, str(bool(e.get_int('DEATHRATTLE'))).lower()))
-    f.write('};\n')
 
     f.write("// -----------------------------------------------------------------------------\n")
     f.write("// Hero / hero power information\n")
