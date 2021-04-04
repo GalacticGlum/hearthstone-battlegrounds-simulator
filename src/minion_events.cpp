@@ -94,6 +94,12 @@ void Minion::do_deathrattle(Battle& battle, int player, int pos) const {
     case MinionType::Imprisoner:
       battle.summon(Minion(MinionType::Imp,golden), player, pos);
       break;
+    case MinionType::UnstableGhoul: {
+      // Deal 1 damage to all minions
+      battle.damage_all(0, 1);
+      battle.damage_all(1, 1);
+      break;
+    }
     // Tier 3
     case MinionType::InfestedWolf:
       battle.summon_many(2, Minion(MinionType::Spider,golden), player, pos);

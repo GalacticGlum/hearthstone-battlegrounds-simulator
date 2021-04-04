@@ -1,0 +1,10 @@
+board
+* 2/2 Murloc Scout
+* 2/2 Murloc Scout
+* 2/2 Murloc Scout
+* 2/2 Murloc Scout
+* 2/2 Murloc Scout
+vs
+* Unstable Ghoul
+
+trace
