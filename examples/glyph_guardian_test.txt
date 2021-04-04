@@ -1,0 +1,11 @@
+board
+* Glyph Guardian
+* Alleycat
+* Murloc Tidehunter
+* Rockpool Hunter
+VS
+* Tabbycat
+* Tabbycat
+* Tabbycat
+
+trace

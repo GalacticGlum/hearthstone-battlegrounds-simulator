@@ -271,6 +271,12 @@ void Minion::on_after_friendly_attack(Minion const& attacker) {
     case MinionType::FesterootHulk:
       buff(double_if_golden(1),0);
       break;
+    case MinionType::GlyphGuardian:
+      if (attacker.type == MinionType::GlyphGuardian) {
+        int multiplier = golden ? 2 : 1;
+        buff(attack * multiplier, 0);
+      }
+      break;
     default:;
   }
 }
