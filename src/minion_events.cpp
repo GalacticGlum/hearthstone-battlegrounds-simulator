@@ -298,6 +298,14 @@ void Minion::on_after_attack(Battle& battle, int player) {
     }
     default:;
   }
+
+  // Ripsnarl Captain implementation
+  // Effect: whenever another friendly Pirate attacks, give it +2/+2.
+  int has_ripsnarl_captain = battle.board[player].has_minion(MinionType::RipsnarlCaptain);
+  if (type != MinionType::RipsnarlCaptain && has_tribe(Tribe::Pirate) && has_ripsnarl_captain) {
+    int buff_amount = has_ripsnarl_captain == 2 ? 4 : 2;
+    buff(buff_amount, buff_amount);
+  }
 }
 
 void Minion::on_attack_and_kill(Battle& battle, int player, int pos, bool overkill) {
@@ -312,7 +320,7 @@ void Minion::on_attack_and_kill(Battle& battle, int player, int pos, bool overki
       break;
     case MinionType::HeraldOfFlame: {
       if (!overkill) break;
-      int enemy_player = (int)(!(bool)player);
+      int enemy_player = 1-player;
       auto& minions = battle.board[enemy_player].minions;
       for (int i = 0; i < minions.size(); ++i) {
         if (minions[i].alive() && minions[i].exists()) {
@@ -327,11 +335,12 @@ void Minion::on_attack_and_kill(Battle& battle, int player, int pos, bool overki
 
   // Waxrider Togwaggle implementation
   // Effect: Whenever a friendly minion Dragon kills an enemy, gain +2/+2.
-  if (battle.board[player].has_minion(MinionType::WaxriderTogwaggle) && has_tribe(Tribe::Dragon)) {
+  int has_waxrider_togwaggle = battle.board[player].has_minion(MinionType::WaxriderTogwaggle);
+  if (type != MinionType::WaxriderTogwaggle && has_tribe(Tribe::Dragon) && has_waxrider_togwaggle) {
     auto& minions = battle.board[player].minions;
     for (int i = 0; i < minions.size(); ++i) {
       if (minions[i].type == MinionType::WaxriderTogwaggle) {
-        int buff = double_if_golden(2);
+        int buff = has_waxrider_togwaggle ? 4 : 2;
         minions[i].buff(buff, buff);
       }
     }

@@ -1,0 +1,10 @@
+board
+* golden Sky Pirate
+* Ripsnarl Captain
+vs
+* Murloc Scout
+* Murloc Scout
+* Murloc Scout
+
+trace
+run 1
