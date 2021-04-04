@@ -1,0 +1,12 @@
+board
+* Southsea Captain
+* Scallywag
+* Sky Pirate
+* Murloc Scout
+* Tabbycat
+VS
+* Murloc Scout
+* Murloc Scout
+* Murloc Scout
+
+trace

@@ -80,7 +80,8 @@ constexpr bool is_aura_minion(MinionType t) {
       || t == MinionType::OldMurkEye
       || t == MinionType::PhalanxCommander
       || t == MinionType::Siegebreaker
-      || t == MinionType::MalGanis;
+      || t == MinionType::MalGanis
+      || t == MinionType::SouthseaCaptain;
 }
 
 // -----------------------------------------------------------------------------

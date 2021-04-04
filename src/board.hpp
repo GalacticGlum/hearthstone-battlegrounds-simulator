@@ -95,7 +95,7 @@ public:
   }
 
   // Targeting
-  
+
   // target to attack
   int random_attack_target(BattleRNG& rng, RNGKey key) const {
     int num_taunts = 0, num_minions = 0;

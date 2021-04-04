@@ -32,6 +32,9 @@ bool Minion::recompute_aura_from(Board& board, int pos, Board const* enemy_board
       board.aura_buff_others_if(double_if_golden(2), double_if_golden(2), pos,
         [](Minion const& to){ return to.has_tribe(Tribe::Demon); });
       return true;
+    case MinionType::SouthseaCaptain:
+      board.aura_buff_others_if(double_if_golden(1), double_if_golden(1), pos, [](Minion const& to){ return to.has_tribe(Tribe::Pirate); });
+      return true;
     default:;
       return false;
   }
@@ -267,7 +270,7 @@ void Minion::on_attack_and_kill(Battle& battle, int player, int pos, bool overki
 
   // Waxrider Togwaggle implementation
   // Effect: Whenever a friendly minion Dragon kills an enemy, gain +2/+2.
-  if (battle.board[player].has_minion(MinionType::WaxriderTogwaggle) && tribe() == Tribe::Dragon) {
+  if (battle.board[player].has_minion(MinionType::WaxriderTogwaggle) && has_tribe(Tribe::Dragon)) {
     auto& minions = battle.board[player].minions;
     for (int i = 0; i < minions.size(); ++i) {
       if (minions[i].type == MinionType::WaxriderTogwaggle) {
