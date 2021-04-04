@@ -340,7 +340,7 @@ void Minion::on_attack_and_kill(Battle& battle, int player, int pos, bool overki
     auto& minions = battle.board[player].minions;
     for (int i = 0; i < minions.size(); ++i) {
       if (minions[i].type == MinionType::WaxriderTogwaggle) {
-        int buff = has_waxrider_togwaggle ? 4 : 2;
+        int buff = has_waxrider_togwaggle == 2 ? 4 : 2;
         minions[i].buff(buff, buff);
       }
     }
