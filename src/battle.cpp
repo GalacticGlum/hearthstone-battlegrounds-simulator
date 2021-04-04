@@ -118,6 +118,7 @@ void Battle::single_attack_by(int player, int from) {
   if (kill) {
     attacker.on_attack_and_kill(*this, player, from, overkill);
   }
+  attacker.on_after_attack(*this, player);
   on_after_friendly_attack(attacker, player);
   // remove dead minions and run deathrattles
   check_for_deaths();

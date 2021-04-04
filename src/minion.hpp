@@ -152,6 +152,7 @@ public:
   void on_friendly_summon(Board& board, Minion& summoned, bool played);
   void on_friendly_death(Battle& battle, Minion const& dead_minion, int player);
   void on_damaged(Battle& battle, int player, int pos);
+  void on_after_attack(Battle& battle, int player);
   void on_attack_and_kill(Battle& battle, int player, int pos, bool overkill);
   void on_after_friendly_attack(Minion const& attacker);
   void on_break_friendly_divine_shield();

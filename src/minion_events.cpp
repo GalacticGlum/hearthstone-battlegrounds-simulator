@@ -272,6 +272,22 @@ void Minion::on_damaged(Battle& battle, int player, int pos) {
   }
 }
 
+void Minion::on_after_attack(Battle& battle, int player) {
+  // switch(type) {
+  //   case MinionType::MonstrousMacaw: {
+  //     int i = battle.board[player].random_minion_satisfying(
+  //       [](Minion const& m){ return !m.dead() && has_deathrattle.at(m.type); },
+  //       battle.rng, rng_key(RNGType::DeathrattleMinion, player)
+  //     );
+  //     if (i != -1) {
+  //       battle.board[player].minions[i].do_deathrattle(battle, player, i);
+  //     }
+  //     break;
+  //   }
+  //   default:;
+  // }
+}
+
 void Minion::on_attack_and_kill(Battle& battle, int player, int pos, bool overkill) {
   switch (type) {
     case MinionType::IronhideDirehorn:

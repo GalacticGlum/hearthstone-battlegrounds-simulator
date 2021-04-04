@@ -1,0 +1,11 @@
+board
+* golden Scallywag
+* Monstrous Macaw
+* Murloc Scout
+* Murloc Scout
+vs
+* golden Murloc Scout
+* Murloc Scout
+* Murloc Scout
+
+trace

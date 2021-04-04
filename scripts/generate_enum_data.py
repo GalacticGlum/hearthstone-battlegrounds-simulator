@@ -302,6 +302,13 @@ def write_enum_data_cpp(minions, heroes):
     write_minion_list(f, minions, "deathrattle", lambda e: e.get_int("DEATHRATTLE") and not e.token)
     write_minion_list(f, minions, "legendary", lambda e: e.get_int("RARITY") == 5 and not e.token)
 
+    # Add has_deathrattle set
+    f.write('static const std::unordered_map<MinionType, bool> has_deathrattle = {\n')
+    for m in minions:
+      e = m[0]
+      f.write('\t{{ MinionType::{}, {} }},\n'.format(e.enum, str(bool(e.get_int('DEATHRATTLE'))).lower()))
+    f.write('};\n')
+
     f.write("// -----------------------------------------------------------------------------\n")
     f.write("// Hero / hero power information\n")
     f.write("// -----------------------------------------------------------------------------\n\n")
