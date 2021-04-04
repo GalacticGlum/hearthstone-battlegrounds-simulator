@@ -1,0 +1,14 @@
+board
+* 3/3 Murloc Scout
+* Murloc Scout, taunt
+* 3/3 Murloc Scout
+* golden Qiraji Harbinger
+vs
+* golden Tabbycat
+* golden Tabbycat
+* Tabbycat
+* Tabbycat
+* Tabbycat
+* Tabbycat
+
+trace

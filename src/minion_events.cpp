@@ -282,6 +282,13 @@ void Minion::on_damaged(Battle& battle, int player, int pos) {
     }
     default:;
   }
+
+  // Qiraji Harbringer implementation
+  int has_qiraji_harbringer = battle.board[player].has_minion(MinionType::QirajiHarbinger);
+  if (type != MinionType::QirajiHarbinger && taunt && health <= 0 && has_qiraji_harbringer) {
+    int buff = has_qiraji_harbringer == 2 ? 4 : 2;
+    battle.board[player].aura_buff_adjacent(buff, buff, pos);
+  }
 }
 
 void Minion::on_after_attack(Battle& battle, int player) {
