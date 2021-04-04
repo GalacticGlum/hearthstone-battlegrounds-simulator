@@ -1,0 +1,7 @@
+board
+* Murloc Scout, divine shield
+* Drakonid Enforcer
+vs
+* Murloc Scout
+
+trace

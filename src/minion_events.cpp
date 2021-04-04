@@ -346,6 +346,10 @@ void Minion::on_break_friendly_divine_shield() {
     case MinionType::BolvarFireblood:
       buff(double_if_golden(2),0);
       break;
+    case MinionType::DrakonidEnforcer: {
+      buff(double_if_golden(2), double_if_golden(2));
+      break;
+    }
     default:;
   }
 }
