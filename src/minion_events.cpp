@@ -310,6 +310,18 @@ void Minion::on_attack_and_kill(Battle& battle, int player, int pos, bool overki
     case MinionType::TheBoogeymonster:
       buff(double_if_golden(2),double_if_golden(2));
       break;
+    case MinionType::HeraldOfFlame: {
+      if (!overkill) break;
+      int enemy_player = (int)(!(bool)player);
+      auto& minions = battle.board[enemy_player].minions;
+      for (int i = 0; i < minions.size(); ++i) {
+        if (minions[i].alive() && minions[i].exists()) {
+          battle.damage(enemy_player, i, 3);
+          break;
+        }
+      }
+      break;
+    }
     default:;
   }
 
