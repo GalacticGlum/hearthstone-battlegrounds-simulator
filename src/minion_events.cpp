@@ -59,6 +59,11 @@ void Minion::do_deathrattle(Battle& battle, int player, int pos) const {
         battle.board[player].buff_random_minion(this->attack,0, battle.rng, player);
       }
       break;
+    case MinionType::Scallywag:
+      battle.summon(Minion(MinionType::SkyPirate, golden), player, pos);
+      // it attacks immediately
+      battle.single_attack_by(player, pos);
+      break;
     // Tier 2
     case MinionType::HarvestGolem:
       battle.summon(Minion(MinionType::DamagedGolem,golden), player, pos);
