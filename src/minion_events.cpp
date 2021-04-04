@@ -220,6 +220,13 @@ void Minion::on_friendly_summon(Board& board, Minion& summoned, bool played) {
         summoned.buff(double_if_golden(5), double_if_golden(5));
       }
       break;
+    case MinionType::DeflectOBot: {
+      if (summoned.has_tribe(Tribe::Mech)) {
+        buff(double_if_golden(1), 0);
+        divine_shield = true;
+      }
+      break;
+    }
     default:;
   }
 }
@@ -276,7 +283,7 @@ void Minion::on_after_attack(Battle& battle, int player) {
   switch(type) {
     case MinionType::MonstrousMacaw: {
       int i = battle.board[player].random_minion_satisfying(
-        [](Minion const& m){ return !m.dead() && m.deathrattle; },
+        [](Minion const& m){ return !m.dead() && m.info().deathrattle; },
         battle.rng, rng_key(RNGType::DeathrattleMinion, player)
       );
       if (i != -1) {

@@ -1,0 +1,9 @@
+board
+* Replicating Menace
+* Deflect-o-bot
+vs
+* Murloc Scout
+* Murloc Scout
+* Murloc Scout
+
+trace
