@@ -264,6 +264,18 @@ void Minion::on_attack_and_kill(Battle& battle, int player, int pos, bool overki
       break;
     default:;
   }
+
+  // Waxrider Togwaggle implementation
+  // Effect: Whenever a friendly minion Dragon kills an enemy, gain +2/+2.
+  if (battle.board[player].has_minion(MinionType::WaxriderTogwaggle) && tribe() == Tribe::Dragon) {
+    auto& minions = battle.board[player].minions;
+    for (int i = 0; i < minions.size(); ++i) {
+      if (minions[i].type == MinionType::WaxriderTogwaggle) {
+        int buff = double_if_golden(2);
+        minions[i].buff(buff, buff);
+      }
+    }
+  }
 }
 
 void Minion::on_after_friendly_attack(Minion const& attacker) {
