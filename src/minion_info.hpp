@@ -53,6 +53,7 @@ struct MinionInfo {
 
 // All information on the minions
 extern const MinionInfo minion_info[MinionType_count];
+extern const std::unordered_map<std::string, MinionType> minion_name_type_map;
 
 inline MinionInfo const& info(MinionType type) {
   return minion_info[static_cast<int>(type)];
