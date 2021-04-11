@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <string>
 using std::istream;
 
 // -----------------------------------------------------------------------------
@@ -78,12 +79,12 @@ void load_boards(istream& lines, const char* filename, Boards& boards) {
   ErrorHandler error(std::cerr, filename);
 
   BoardWithLabel board;
-  
+
   while (lines.good()) {
     // get line
     error.line_number++;
     std::string line;
-    getline(lines,line);
+    std::getline(lines,line);
     StringParser in(line.c_str(), error);
 
     // parse line
