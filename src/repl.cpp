@@ -510,13 +510,29 @@ int main(int argc, char const** argv) {
   if (argc <= 1) {
     REPL repl(cin, cout, true, "");
   } else {
-    for (int i=1; i<argc; ++i) {
-      ifstream in(argv[i]);
-      if (!in) {
-        cerr << "Error loading file " << argv[i] << endl;
+    // Check for mode
+    std::string mode(argv[1]);
+    if (mode == "--line" || mode == "-l") {
+      if (argc == 2) {
+        cerr << "One or more input commands are required! (" << argc - 2 << " provided)" << endl;
         return 1;
       }
-      REPL repl(in, cout, false, argv[i]);
+      // Line by line input mode
+      std::string input;
+      for (int i = 2; i < argc; ++i) {
+        input += std::string(argv[i]) + "\n";
+      }
+      std::istringstream in(input);
+      REPL repl(in, cout, false, "");
+    } else {
+      for (int i=1; i<argc; ++i) {
+        ifstream in(argv[i]);
+        if (!in) {
+          cerr << "Error loading file " << argv[i] << endl;
+          return 1;
+        }
+        REPL repl(in, cout, false, argv[i]);
+      }
     }
   }
   return 0;
