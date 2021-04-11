@@ -10,3 +10,4 @@ src/enum_data.cpp
 src/*.txt
 
 .vscode/
+build/
