@@ -1,15 +1,7 @@
 import subprocess
 from pathlib import Path
 from distutils.core import setup, Extension
-from distutils.command.install import install as DistutilsInstall
 
-
-class CustomInstall(DistutilsInstall):
-    """A custom installer for this package."""
-    def run(self):
-        # Generate the enum data
-        subprocess.run(['python', 'scripts/generate_enum_data.py', 'hsdata/CardDefs.xml'])
-        super().run()
 
 def main():
     ext = Extension(
@@ -25,9 +17,9 @@ def main():
           version="1.0.0",
           description="Python interface for the Hearthstone Battlegrounds combat simulator.",
           author="Shon Verch",
-          ext_modules=[ext],
-          cmdclass={'install': CustomInstall}
+          ext_modules=[ext]
     )
 
 if __name__ == "__main__":
+    subprocess.run(['python', 'scripts/generate_enum_data.py', 'hsdata/CardDefs.xml'])
     main()
