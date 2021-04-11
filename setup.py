@@ -7,7 +7,7 @@ def main():
         sources=['src/enum_data.cpp', 'src/minion_events.cpp', 'src/hero_powers.cpp', 'src/battle.cpp', 'src/random.cpp', 'src/hsbgsimmodule.cpp'],
         include_dirs=['./src']
     )
-    setup(name="hsbg_combat_sim",
+    setup(name="hsbg_sim",
           version="1.0.0",
           description="Python interface for the Hearthstone Battlegrounds combat simulator.",
           author="Shon Verch",
