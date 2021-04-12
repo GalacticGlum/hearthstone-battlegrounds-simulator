@@ -340,13 +340,167 @@ static PyTypeObject MinionType = {
     Minion_new,                                 /* tp_new */
 };
 
-// typedef struct
-// {
-//     PyObject_HEAD
-//     int tavern_tier;
-//     int hero_health;
-//     PyObject* minions;
-// } BoardObject;
+typedef struct
+{
+    PyObject_HEAD
+    int tavern_tier;
+    int hero_health;
+    PyObject* minions;
+} BoardObject;
+
+static int Board_traverse(BoardObject* self, visitproc visit, void* arg)
+{
+    Py_VISIT(self->minions);
+    return 0;
+}
+
+static int Board_clear(BoardObject* self)
+{
+    Py_CLEAR(self->minions);
+    return 0;
+}
+
+static void Board_dealloc(BoardObject* self)
+{
+    PyObject_GC_UnTrack(self);
+    Board_clear(self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
+}
+
+static PyObject* Board_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
+{
+    BoardObject* self;
+    self = (BoardObject*)type->tp_alloc(type, 0);
+    if (self != NULL)
+    {
+        self->minions = PyList_New(0);
+        if (self->minions == NULL)
+        {
+            Py_DECREF(self);
+            return NULL;
+        }
+        self->tavern_tier = 0;
+        self->hero_health = 0;
+    }
+    return (PyObject*)self;
+}
+
+static int Board_init(BoardObject* self, PyObject* args, PyObject* kwds)
+{
+    static char* kwlist[] = {
+        (char*)"tavern_tier",
+        (char*)"hero_health",
+        (char*)"minions",
+        NULL
+    };
+    PyObject* minions = NULL, *tmp;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|iiO!", kwlist,
+                                     &self->tavern_tier,
+                                     &self->hero_health,
+                                     &PyList_Type,
+                                     &minions))
+        return -1;
+    if (minions)
+    {
+        // Py_ssize_t n = PyList_Size(minions);
+        // for (int i = 0; i < n; ++i)
+        // {
+        //     tmp = PyList_GetItem(minions, i);
+        //     if (!PyObject_IsInstance(tmp, (PyObject*)&MinionType))
+        //     {
+        //         PyErr_SetString(PyExc_TypeError,
+        //                         "The minions attribute value must be a list of Minion objects.");
+        //     }
+        // }
+        tmp = self->minions;
+        Py_INCREF(minions);
+        self->minions = minions;
+        Py_DECREF(tmp);
+    }
+    return 0;
+}
+
+static PyMemberDef Board_members[] = {
+    {"tavern_tier", T_INT, offsetof(BoardObject, tavern_tier), 0,
+     "The tier of the tavern."},
+    {"hero_health", T_INT, offsetof(BoardObject, hero_health), 0,
+     "The health of the hero."},
+    {NULL}  /* Sentinel */
+};
+
+static PyObject* Board_getminions(BoardObject* self, void* closure)
+{
+    Py_INCREF(self->minions);
+    return self->minions;
+}
+
+static int Board_setminions(BoardObject* self, PyObject* value, void* closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete the minions attribute");
+        return -1;
+    }
+
+    if (!PyList_Check(value))
+    {
+        PyErr_SetString(PyExc_TypeError,
+                        "The minions attribute value must be a list");
+        return -1;
+    }
+    Py_INCREF(value);
+    Py_CLEAR(self->minions);
+    self->minions = value;
+    return 0;
+}
+
+static PyGetSetDef Board_getsetters[] = {
+    {"minions", (getter) Board_getminions, (setter) Board_setminions,
+     "The minions on the board.", NULL},
+    {NULL}  /* Sentinel */
+};
+
+static PyTypeObject BoardType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "hsbg_sim.Board",                          /* tp_name */
+    sizeof(BoardObject),                       /* tp_basicsize */
+    0,                                         /* tp_itemsize */
+    (destructor) Board_dealloc,                /* tp_dealloc */
+    0,                                         /* tp_print */
+    0,                                         /* tp_getattr */
+    0,                                         /* tp_setattr */
+    0,                                         /* tp_reserved */
+    0,                                         /* tp_repr */
+    0,                                         /* tp_as_number */
+    0,                                         /* tp_as_sequence */
+    0,                                         /* tp_as_mapping */
+    0,                                         /* tp_hash  */
+    0,                                         /* tp_call */
+    0,                                         /* tp_str */
+    0,                                         /* tp_getattro */
+    0,                                         /* tp_setattro */
+    0,                                         /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE
+        | Py_TPFLAGS_HAVE_GC,                  /* tp_flags */
+    "A board.",                                /* tp_doc */
+    (traverseproc) Board_traverse,             /* tp_traverse */
+    (inquiry) Board_clear,                     /* tp_clear */
+    0,                                         /* tp_richcompare */
+    0,                                         /* tp_weaklistoffset */
+    0,                                         /* tp_iter */
+    0,                                         /* tp_iternext */
+    0,                                         /* tp_methods */
+    Board_members,                             /* tp_members */
+    Board_getsetters,                          /* tp_getset */
+    0,                                         /* tp_base */
+    0,                                         /* tp_dict */
+    0,                                         /* tp_descr_get */
+    0,                                         /* tp_descr_set */
+    0,                                         /* tp_dictoffset */
+    (initproc) Board_init,                     /* tp_init */
+    0,                                         /* tp_alloc */
+    Board_new,                                 /* tp_new */
+};
 
 static PyObject* hsbg_run_simulator(PyObject* self, PyObject* args)
 {
@@ -422,6 +576,9 @@ PyInit_hsbg_sim(void) {
     if (PyType_Ready(&MinionType) < 0)
         return NULL;
 
+    if (PyType_Ready(&BoardType) < 0)
+        return NULL;
+
     m = PyModule_Create(&hsbgsimmodule);
     if (m == NULL)
         return NULL;
@@ -436,6 +593,13 @@ PyInit_hsbg_sim(void) {
     Py_INCREF(&MinionType);
     if (PyModule_AddObject(m, "Minion", (PyObject *) &MinionType) < 0) {
         Py_DECREF(&MinionType);
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    Py_INCREF(&BoardType);
+    if (PyModule_AddObject(m, "Board", (PyObject *) &BoardType) < 0) {
+        Py_DECREF(&BoardType);
         Py_DECREF(m);
         return NULL;
     }
