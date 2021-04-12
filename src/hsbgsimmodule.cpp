@@ -52,17 +52,17 @@ static PyObject* BattleResult_new(PyTypeObject* type, PyObject* args, PyObject* 
 static int BattleResult_init(BattleResultObject* self, PyObject* args, PyObject* kwds)
 {
     static char *kwlist[] = {
-        "win_probability",
-        "tie_probability",
-        "lose_probability",
-        "mean_score",
-        "median_score",
-        "mean_damage_taken",
-        "mean_damage_dealt",
-        "expected_hero_health",
-        "expected_enemy_hero_health",
-        "death_probability",
-        "enemy_death_probability",
+        (char*)"win_probability",
+        (char*)"tie_probability",
+        (char*)"lose_probability",
+        (char*)"mean_score",
+        (char*)"median_score",
+        (char*)"mean_damage_taken",
+        (char*)"mean_damage_dealt",
+        (char*)"expected_hero_health",
+        (char*)"expected_enemy_hero_health",
+        (char*)"death_probability",
+        (char*)"enemy_death_probability",
         NULL
     };
     PyObject *tmp;
