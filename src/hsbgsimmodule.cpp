@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-typedef struct {
+typedef struct
+{
     PyObject_HEAD
     float win_probability;
     float tie_probability;
@@ -65,9 +66,7 @@ static int BattleResult_init(BattleResultObject* self, PyObject* args, PyObject*
         (char*)"enemy_death_probability",
         NULL
     };
-    PyObject *tmp;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|UUi", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fffffffffff", kwlist,
                                      &self->win_probability,
                                      &self->tie_probability,
                                      &self->lose_probability,
@@ -151,6 +150,204 @@ static PyTypeObject BattleResultType = {
     BattleResult_new,                             /* tp_new */
 };
 
+typedef struct
+{
+    PyObject_HEAD
+    PyObject* name;
+    int attack;
+    int health;
+    bool is_golden;
+    bool taunt;
+    bool divine_shield;
+    bool poisonous;
+    bool windfury;
+    bool reborn;
+} MinionObject;
+
+static int Minion_traverse(MinionObject* self, visitproc visit, void* arg)
+{
+    Py_VISIT(self->name);
+    return 0;
+}
+
+static int Minion_clear(MinionObject* self)
+{
+    Py_CLEAR(self->name);
+    return 0;
+}
+
+static void Minion_dealloc(MinionObject* self)
+{
+    PyObject_GC_UnTrack(self);
+    Minion_clear(self);
+    Py_TYPE(self)->tp_free((PyObject*) self);
+}
+
+static PyObject* Minion_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
+{
+    MinionObject *self;
+    self = (MinionObject *) type->tp_alloc(type, 0);
+    if (self != NULL)
+    {
+        self->name = PyUnicode_FromString("");
+        if (self->name == NULL)
+        {
+            Py_DECREF(self);
+            return NULL;
+        }
+        self->attack = 0;
+        self->health = 0;
+        self->is_golden = false;
+        self->taunt = false;
+        self->divine_shield = false;
+        self->poisonous = false;
+        self->windfury = false;
+        self->reborn = false;
+    }
+    return (PyObject *) self;
+}
+
+static int Minion_init(MinionObject* self, PyObject* args, PyObject* kwds)
+{
+    static char *kwlist[] = {
+        (char*)"name",
+        (char*)"attack",
+        (char*)"health",
+        (char*)"is_golden",
+        (char*)"taunt",
+        (char*)"divine_shield",
+        (char*)"poisonous",
+        (char*)"windfury",
+        (char*)"reborn",
+        NULL
+    };
+    PyObject *name = NULL, *tmp;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Uiipppppp", kwlist,
+                                     &name,
+                                     &self->attack,
+                                     &self->health,
+                                     &self->is_golden,
+                                     &self->taunt,
+                                     &self->divine_shield,
+                                     &self->poisonous,
+                                     &self->windfury,
+                                     &self->reborn))
+        return -1;
+
+    if (name)
+    {
+        tmp = self->name;
+        Py_INCREF(name);
+        self->name = name;
+        Py_DECREF(tmp);
+    }
+
+    return 0;
+}
+
+static PyMemberDef Minion_members[] = {
+    {"attack", T_INT, offsetof(MinionObject, attack), 0,
+     "The attack of the minion"},
+    {"health", T_INT, offsetof(MinionObject, health), 0,
+     "The health of the minion"},
+    {"is_golden", T_BOOL, offsetof(MinionObject, is_golden), 0,
+     "Whether this minion is a golden copy"},
+    {"taunt", T_BOOL, offsetof(MinionObject, taunt), 0,
+     "Whether this minion has taunt"},
+    {"divine_shield", T_BOOL, offsetof(MinionObject, divine_shield), 0,
+     "Whether this minion has divine shield"},
+    {"poisonous", T_BOOL, offsetof(MinionObject, poisonous), 0,
+     "Whether this minion is poisonous"},
+    {"windfury", T_BOOL, offsetof(MinionObject, windfury), 0,
+     "Whether this minion has windfury"},
+    {"reborn", T_BOOL, offsetof(MinionObject, reborn), 0,
+     "Whether this minion has reborn"},
+    {NULL}  /* Sentinel */
+};
+
+static PyObject* Minion_getname(MinionObject* self, void* closure)
+{
+    Py_INCREF(self->name);
+    return self->name;
+}
+
+static int Minion_setname(MinionObject* self, PyObject* value, void* closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete the name attribute");
+        return -1;
+    }
+
+    if (!PyUnicode_Check(value))
+    {
+        PyErr_SetString(PyExc_TypeError, "The name attribute value must be a string");
+        return -1;
+    }
+
+    Py_INCREF(value);
+    Py_CLEAR(self->name);
+    self->name = value;
+    return 0;
+}
+
+static PyGetSetDef Minion_getsetters[] = {
+    {"name", (getter) Minion_getname, (setter) Minion_setname,
+     "The name of the minion.", NULL},
+    {NULL}  /* Sentinel */
+};
+
+static PyTypeObject MinionType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "hsbg_sim.Minion",                         /* tp_name */
+    sizeof(MinionObject),                      /* tp_basicsize */
+    0,                                         /* tp_itemsize */
+    (destructor) Minion_dealloc,               /* tp_dealloc */
+    0,                                         /* tp_print */
+    0,                                         /* tp_getattr */
+    0,                                         /* tp_setattr */
+    0,                                         /* tp_reserved */
+    0,                                         /* tp_repr */
+    0,                                         /* tp_as_number */
+    0,                                         /* tp_as_sequence */
+    0,                                         /* tp_as_mapping */
+    0,                                         /* tp_hash  */
+    0,                                         /* tp_call */
+    0,                                         /* tp_str */
+    0,                                         /* tp_getattro */
+    0,                                         /* tp_setattro */
+    0,                                         /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE
+        | Py_TPFLAGS_HAVE_GC,                  /* tp_flags */
+    "A minion.",                                /* tp_doc */
+    (traverseproc) Minion_traverse,             /* tp_traverse */
+    (inquiry) Minion_clear,                     /* tp_clear */
+    0,                                          /* tp_richcompare */
+    0,                                          /* tp_weaklistoffset */
+    0,                                          /* tp_iter */
+    0,                                          /* tp_iternext */
+    0,                                          /* tp_methods */
+    Minion_members,                             /* tp_members */
+    Minion_getsetters,                          /* tp_getset */
+    0,                                          /* tp_base */
+    0,                                          /* tp_dict */
+    0,                                          /* tp_descr_get */
+    0,                                          /* tp_descr_set */
+    0,                                          /* tp_dictoffset */
+    (initproc) Minion_init,                     /* tp_init */
+    0,                                          /* tp_alloc */
+    Minion_new,                                 /* tp_new */
+};
+
+// typedef struct
+// {
+//     PyObject_HEAD
+//     int tavern_tier;
+//     int hero_health;
+//     PyObject* minions;
+// } BoardObject;
+
 static PyObject* hsbg_run_simulator(PyObject* self, PyObject* args)
 {
     PyObject* commands_list_obj;
@@ -222,6 +419,9 @@ PyInit_hsbg_sim(void) {
     if (PyType_Ready(&BattleResultType) < 0)
         return NULL;
 
+    if (PyType_Ready(&MinionType) < 0)
+        return NULL;
+
     m = PyModule_Create(&hsbgsimmodule);
     if (m == NULL)
         return NULL;
@@ -229,6 +429,13 @@ PyInit_hsbg_sim(void) {
     Py_INCREF(&BattleResultType);
     if (PyModule_AddObject(m, "BattleResult", (PyObject *) &BattleResultType) < 0) {
         Py_DECREF(&BattleResultType);
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    Py_INCREF(&MinionType);
+    if (PyModule_AddObject(m, "Minion", (PyObject *) &MinionType) < 0) {
+        Py_DECREF(&MinionType);
         Py_DECREF(m);
         return NULL;
     }
