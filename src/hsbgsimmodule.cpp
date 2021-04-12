@@ -517,10 +517,19 @@ static PyObject* hsbg_run_simulator(PyObject* self, PyObject* args)
         {
             PyErr_SetString(PyExc_TypeError,
                             "The minions attribute value of friendly_board must be a list of Minion objects.");
+            return NULL;
         }
         MinionObject* minion_obj = (MinionObject*)tmp;
         Minion minion;
-        minion.type = minion_name_type_map.at(std::string(PyUnicode_AsUTF8(minion_obj->name)));
+        std::string minion_name(PyUnicode_AsUTF8(minion_obj->name));
+        if (minion_name_type_map.find(minion_name) == minion_name_type_map.end())
+        {
+            std::ostringstream ss;
+            ss << "Unknown minion with name \"" << minion_name << "\"";
+            PyErr_SetString(PyExc_ValueError, ss.str().c_str());
+            return NULL;
+        }
+        minion.type = minion_name_type_map.at(minion_name);
         minion.attack = minion_obj->attack;
         minion.health = minion_obj->health;
         minion.golden = minion_obj->is_golden;
@@ -547,7 +556,15 @@ static PyObject* hsbg_run_simulator(PyObject* self, PyObject* args)
         }
         MinionObject* minion_obj = (MinionObject*)tmp;
         Minion minion;
-        minion.type = minion_name_type_map.at(std::string(PyUnicode_AsUTF8(minion_obj->name)));
+        std::string minion_name(PyUnicode_AsUTF8(minion_obj->name));
+        if (minion_name_type_map.find(minion_name) == minion_name_type_map.end())
+        {
+            std::ostringstream ss;
+            ss << "Unknown minion with name \"" << minion_name << "\"";
+            PyErr_SetString(PyExc_ValueError, ss.str().c_str());
+            return NULL;
+        }
+        minion.type = minion_name_type_map.at(minion_name);
         minion.attack = minion_obj->attack;
         minion.health = minion_obj->health;
         minion.golden = minion_obj->is_golden;
