@@ -33,8 +33,7 @@ def main():
           version="1.0.0",
           description="Python interface for the Hearthstone Battlegrounds combat simulator.",
           author="Shon Verch",
-          ext_modules=[ext],
-          cmdclass={'build_ext': CustomBuildExtension}
+          ext_modules=[ext]
     )
 
 if __name__ == "__main__":
