@@ -26,7 +26,7 @@ def main():
             'src/random.cpp', 'src/hsbgsimmodule.cpp'
         ],
         include_dirs=['./src'],
-        extra_compile_args=['-std', 'c++11'] if platform.system() != 'Windows' else []
+        extra_compile_args=['-std=c++11'] if platform.system() != 'Windows' else []
     )
 
     setup(name="hsbg_sim",
