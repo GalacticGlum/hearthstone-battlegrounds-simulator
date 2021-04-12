@@ -202,10 +202,10 @@ struct StringParser {
   // Errors
 
   void unknown(const char* what) const {
-    error() << "Unknown " << what << ": " << next_token() << endl;
+    error() << "Unknown " << std::string(what) << ": " << next_token() << endl;
   }
   void expected(const char* what) const {
-    error() << "Expected " << what << ", instead of " << next_token() << endl;
+    error() << "Expected " << std::string(what) << ", instead of " << next_token() << endl;
   }
 
   // Peeking/queries
