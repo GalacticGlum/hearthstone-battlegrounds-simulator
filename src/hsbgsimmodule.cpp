@@ -298,7 +298,7 @@ static PyGetSetDef Minion_getsetters[] = {
     {NULL}  /* Sentinel */
 };
 
-static PyTypeObject MinionType = {
+static PyTypeObject PyMinionType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "hsbg_sim.Minion",                         /* tp_name */
     sizeof(MinionObject),                      /* tp_basicsize */
@@ -402,16 +402,6 @@ static int Board_init(BoardObject* self, PyObject* args, PyObject* kwds)
         return -1;
     if (minions)
     {
-        // Py_ssize_t n = PyList_Size(minions);
-        // for (int i = 0; i < n; ++i)
-        // {
-        //     tmp = PyList_GetItem(minions, i);
-        //     if (!PyObject_IsInstance(tmp, (PyObject*)&MinionType))
-        //     {
-        //         PyErr_SetString(PyExc_TypeError,
-        //                         "The minions attribute value must be a list of Minion objects.");
-        //     }
-        // }
         tmp = self->minions;
         Py_INCREF(minions);
         self->minions = minions;
@@ -504,36 +494,74 @@ static PyTypeObject BoardType = {
 
 static PyObject* hsbg_run_simulator(PyObject* self, PyObject* args)
 {
-    PyObject* commands_list_obj;
+    BoardObject* friendly_board_obj, *enemy_board_obj;
     int n_games;
-    if (!PyArg_ParseTuple(args, "O!i", &PyList_Type, &commands_list_obj, &n_games))
+    if (!PyArg_ParseTuple(args, "O!O!i",
+                          &BoardType, &friendly_board_obj,
+                          &BoardType, &enemy_board_obj,
+                          &n_games))
     {
-        PyErr_SetString(PyExc_TypeError, "commands must be a list.");
+        PyErr_SetString(PyExc_TypeError, "friendly_board and enemy_board must be a Board object and n_games must be an int.");
         return NULL;
     }
 
-    PyObject* item_obj;
-    const char* command;
-    std::string input_commands;
-
-    Py_ssize_t n = PyList_Size(commands_list_obj);
-    for (int i = 0; i < n; ++i)
+    PyObject* tmp;
+    Py_ssize_t minions_size = PyList_Size(friendly_board_obj->minions);
+    Board friendly_board;
+    friendly_board.level = friendly_board_obj->tavern_tier;
+    friendly_board.health = friendly_board_obj->hero_health;
+    for (int i = 0; i < minions_size; ++i)
     {
-        item_obj = PyList_GetItem(commands_list_obj, i);
-        command = PyUnicode_AsUTF8(item_obj);
-        input_commands += std::string(command) + "\n";
+        tmp = PyList_GetItem(friendly_board_obj->minions, i);
+        if (!PyObject_IsInstance(tmp, (PyObject*)&PyMinionType))
+        {
+            PyErr_SetString(PyExc_TypeError,
+                            "The minions attribute value of friendly_board must be a list of Minion objects.");
+        }
+        MinionObject* minion_obj = (MinionObject*)tmp;
+        Minion minion;
+        minion.type = minion_name_type_map.at(std::string(PyUnicode_AsUTF8(minion_obj->name)));
+        minion.attack = minion_obj->attack;
+        minion.health = minion_obj->health;
+        minion.golden = minion_obj->is_golden;
+        minion.taunt = minion_obj->taunt;
+        minion.divine_shield = minion_obj->divine_shield;
+        minion.poison = minion_obj->poisonous;
+        minion.windfury = minion_obj->windfury;
+        minion.reborn = minion_obj->reborn;
+        minion.invalid_aura = true;
+        friendly_board.append(minion);
     }
 
-    std::istringstream in(input_commands);
-    REPL repl(std::cout);
-    while (in.good()) {
-        std::string line;
-        std::getline(in,line);
-        repl.parse_line(line);
+    minions_size = PyList_Size(enemy_board_obj->minions);
+    Board enemy_board;
+    enemy_board.level = enemy_board_obj->tavern_tier;
+    enemy_board.health = enemy_board_obj->hero_health;
+    for (int i = 0; i < minions_size; ++i)
+    {
+        tmp = PyList_GetItem(enemy_board_obj->minions, i);
+        if (!PyObject_IsInstance(tmp, (PyObject*)&PyMinionType))
+        {
+            PyErr_SetString(PyExc_TypeError,
+                            "The minions attribute value of enemy_board must be a list of Minion objects.");
+        }
+        MinionObject* minion_obj = (MinionObject*)tmp;
+        Minion minion;
+        minion.type = minion_name_type_map.at(std::string(PyUnicode_AsUTF8(minion_obj->name)));
+        minion.attack = minion_obj->attack;
+        minion.health = minion_obj->health;
+        minion.golden = minion_obj->is_golden;
+        minion.taunt = minion_obj->taunt;
+        minion.divine_shield = minion_obj->divine_shield;
+        minion.poison = minion_obj->poisonous;
+        minion.windfury = minion_obj->windfury;
+        minion.reborn = minion_obj->reborn;
+        minion.invalid_aura = true;
+        enemy_board.append(minion);
     }
 
     std::vector<int> results;
-    ScoreSummary stats = simulate(repl.players[0], repl.players[1], n_games, &results);
+    ScoreSummary stats = simulate(friendly_board, enemy_board, n_games, &results);
 
     BattleResultObject* result;
     result = (BattleResultObject*)BattleResultType.tp_new((PyTypeObject*)&BattleResultType, NULL, NULL);
@@ -545,8 +573,8 @@ static PyObject* hsbg_run_simulator(PyObject* self, PyObject* args)
         result->median_score = static_cast<float>(results[results.size()/2]);
         result->mean_damage_taken = static_cast<float>(stats.mean_damage_taken(0));
         result->mean_damage_dealt = static_cast<float>(stats.mean_damage_taken(1));
-        result->expected_hero_health = static_cast<float>(repl.players[0].health - result->mean_damage_taken);
-        result->expected_enemy_hero_health = static_cast<float>(repl.players[1].health - result->mean_damage_dealt);
+        result->expected_hero_health = static_cast<float>(friendly_board.health - result->mean_damage_taken);
+        result->expected_enemy_hero_health = static_cast<float>(enemy_board.health - result->mean_damage_dealt);
         result->death_probability = static_cast<float>(stats.death_rate(0));
         result->enemy_death_probability = static_cast<float>(stats.death_rate(1));
     }
@@ -573,7 +601,7 @@ PyInit_hsbg_sim(void) {
     if (PyType_Ready(&BattleResultType) < 0)
         return NULL;
 
-    if (PyType_Ready(&MinionType) < 0)
+    if (PyType_Ready(&PyMinionType) < 0)
         return NULL;
 
     if (PyType_Ready(&BoardType) < 0)
@@ -590,9 +618,9 @@ PyInit_hsbg_sim(void) {
         return NULL;
     }
 
-    Py_INCREF(&MinionType);
-    if (PyModule_AddObject(m, "Minion", (PyObject *) &MinionType) < 0) {
-        Py_DECREF(&MinionType);
+    Py_INCREF(&PyMinionType);
+    if (PyModule_AddObject(m, "Minion", (PyObject *) &PyMinionType) < 0) {
+        Py_DECREF(&PyMinionType);
         Py_DECREF(m);
         return NULL;
     }
