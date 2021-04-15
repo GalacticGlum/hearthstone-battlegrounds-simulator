@@ -1,3 +1,4 @@
+import setuptools
 import subprocess
 import platform
 from pathlib import Path
@@ -20,7 +21,8 @@ def main():
           version="1.0.0",
           description="Python interface for the Hearthstone Battlegrounds combat simulator.",
           author="Shon Verch",
-          ext_modules=[ext]
+          ext_modules=[ext],
+          setup_requires=['wheel']
     )
 
 if __name__ == "__main__":
